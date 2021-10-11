@@ -5,6 +5,9 @@ class Tictac:
 
     ST_OK = 0 # Игра не завершена
     
+    MV_OK = 0  # Корректный ход
+    MV_BAD = 1  # Некорректный ход, выход за границы или не пустая клетка
+    
     def __init__(self, players=2, size=3):
         self.size = size
         self.players = players
@@ -13,7 +16,38 @@ class Tictac:
         self.moves = [set([]) for player in range(players)]
         self.state = Tictac.ST_OK
         self.winner = None
-    
+
+    def move(self, cell):
+        # Проверить, что игра не завершена
+        if self.state != Tictac.ST_OK:
+            return Tictac.MV_GAMEOVER
+
+        # Проверить, что ячейка пуста
+        if cell not in self.empty:
+            return Tictac.MV_BAD
+
+        # Переместить ячейку из пустого набора в набор ходов конкретного игрока
+        self.empty.remove(cell)
+        self.moves[self.current_player].add(cell)
+
+        # Проверяет победителя и завершает игру
+        if self.check_winner(self.current_player):
+            self.state = Tictac.ST_END
+            self.winner = self.current_player
+            # Завершить ход
+            return Tictac.MV_OK
+
+        # Если нет победителя, проверяем ничью
+        if not self.empty:
+            # Это последний ход
+            self.state = Tictac.ST_END
+            return Tictac.MV_OK
+
+        # Переключиться на следующего игрока
+        self.current_player = self.next_player(self.current_player)
+
+        return Tictac.MV_OK
+
     
 class TictacTests(unittest.TestCase):
 
@@ -37,3 +71,21 @@ class TictacTests(unittest.TestCase):
         self.assertEqual(t.state, Tictac.ST_OK)
         # Проверить, что победитель отсутствует (т.е. это ничья)
         self.assertEqual(t.winner, None)
+
+    def test_make_a_move(self):
+        # Начать новую игру
+        t = Tictac()
+        # Первый ход, ячейка (0, 0)
+        cell = (0, 0)
+
+        # Проверить, что результат хода успешен
+        self.assertEqual(t.move(cell), Tictac.MV_OK)
+
+        # Проверить, что эта ячейка больше не пуста
+        self.assertTrue(cell not in t.empty)
+        # Проверить, что ячейка находится в наборе ходов игрока 0
+        self.assertTrue(cell in t.moves[0])
+        # Проверить, что текущий игрок - игрок 1
+        self.assertEqual(t.current_player, 1)
+        # Проверить, что результат хода в ту же ячейку вернёт ошибку
+        self.assertEqual(t.move(cell), Tictac.MV_BAD)
