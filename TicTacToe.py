@@ -90,6 +90,19 @@ class Tictac:
                 result.append("Result: Winner player " + str(self.winner))
         return result
 
+    def sprint_board(self):
+        result = []
+        for col in range(self.size):
+            row_chars = []
+            for row in range(self.size):
+                cell_char = " "
+                for player in range(self.players):
+                    if (col, row) in self.moves[player]:
+                        cell_char = str(player)
+                row_chars.append(cell_char)
+            result.append(" | ".join(row_chars))
+        return result
+
 
 class TictacTests(unittest.TestCase):
 
