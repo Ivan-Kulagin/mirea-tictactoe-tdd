@@ -81,7 +81,16 @@ class Tictac:
 
         return False
 
-    
+    def sprint_result(self):
+        result = []
+        if self.state != Tictac.ST_OK:
+            if self.winner is None:
+                result.append("Result: Draw")
+            else:
+                result.append("Result: Winner player " + str(self.winner))
+        return result
+
+
 class TictacTests(unittest.TestCase):
 
     def test_game_start_checks(self):
@@ -184,3 +193,22 @@ class TictacTests(unittest.TestCase):
         self.assertEqual(t.state, Tictac.ST_END)
         # Проверить, что победитель отсутствует (идентификатор ничьи)
         self.assertEqual(t.winner, None)
+        
+     def test_sprint_helping_functions(self):
+        # Начать новую игру
+        t = Tictac()
+
+        # Проверить, что строка с результатом незавершённой игры пуста
+        self.assertEqual(t.sprint_result(), [])
+        # Проверить, что результат завершённой игры без победителя - Ничья
+        t.state = Tictac.ST_END
+        self.assertEqual(t.sprint_result(), ["Result: Draw"])
+        # Проверить результат завершённой игры, когда есть победитель
+        t.winner = 1
+        self.assertEqual(t.sprint_result(), ["Result: Winner player 1"])
+
+        # Напечатать пустое игровое поле
+        self.assertEqual(t.sprint_board(), ["  |   |  ", "  |   |  ", "  |   |  "])
+        # Напечатать непустое игровок поле
+        t.moves = [set([(0, 0)]), set([(1, 1)])]
+        self.assertEqual(t.sprint_board(), ["0 |   |  ", "  | 1 |  ", "  |   |  "])
