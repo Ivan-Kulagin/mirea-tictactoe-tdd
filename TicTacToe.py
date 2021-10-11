@@ -225,3 +225,11 @@ class TictacTests(unittest.TestCase):
         # Напечатать непустое игровок поле
         t.moves = [set([(0, 0)]), set([(1, 1)])]
         self.assertEqual(t.sprint_board(), ["0 |   |  ", "  | 1 |  ", "  |   |  "])
+
+    def test_play_a_random_game(self):
+        t = Tictac(size=4, players=2)
+        while t.state == Tictac.ST_OK:
+            print()
+            t.move(list(t.empty)[90 % len(t.empty)])
+            print("\n".join(t.sprint_board()))
+        print("\n".join(t.sprint_result()))
