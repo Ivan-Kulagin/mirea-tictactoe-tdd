@@ -171,3 +171,16 @@ class TictacTests(unittest.TestCase):
         # Проверить, что 3 ячейки на побочной диагонали приведут к победе
         t.moves[1] = {(2, 0), (1, 1), (0, 2)}
         self.assertTrue(t.check_winner(1))
+        
+    def test_draw_move(self):
+        # Начать новую игру
+        t = Tictac()
+        # Оставить только одну пустую ячейку
+        t.empty = {(0, 0)}
+        # Сделать ход в пустую ячейку
+        t.move((0, 0))
+
+        # Проверить, что игра заканчивается после этого хода
+        self.assertEqual(t.state, Tictac.ST_END)
+        # Проверить, что победитель отсутствует (идентификатор ничьи)
+        self.assertEqual(t.winner, None)
