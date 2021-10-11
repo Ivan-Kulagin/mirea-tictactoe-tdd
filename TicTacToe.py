@@ -4,9 +4,11 @@ import unittest
 class Tictac:
 
     ST_OK = 0 # Игра не завершена
+    ST_END = 1 # Игра завершена
     
     MV_OK = 0  # Корректный ход
     MV_BAD = 1  # Некорректный ход, выход за границы или не пустая клетка
+    MV_GAMEOVER = 2 # Некорректный ход, конец игры
     
     def __init__(self, players=2, size=3):
         self.size = size
@@ -52,6 +54,32 @@ class Tictac:
         # Переход к следующему игроку
         return (player + 1) % self.players
 
+    def check_winner(self, player):
+        rows = [0] * self.size
+        cols = [0] * self.size
+        diag1 = 0
+        diag2 = 0
+
+        for move in self.moves[player]:
+            rows[move[1]] += 1
+            cols[move[0]] += 1
+            if move[0] == move[1]:
+                diag1 += 1
+            if move[0] + move[1] == self.size - 1:
+                diag2 += 1
+
+        for row in rows:
+            if row == self.size:
+                return True
+
+        for col in cols:
+            if col == self.size:
+                return True
+
+        if diag1 == self.size or diag2 == self.size:
+            return True
+
+        return False
     
 class TictacTests(unittest.TestCase):
 
@@ -102,3 +130,20 @@ class TictacTests(unittest.TestCase):
         self.assertEqual(t.next_player(0), 1)
         # Проверить, что следующий после игрока 2 - игрок 0
         self.assertEqual(t.next_player(2), 0)
+        
+    def test_winning_move(self):
+        # Начать новую игру
+        t = Tictac()
+        # Добавить два хода для игрока 1
+        t.moves[1] = {(0, 0), (0, 1)}
+        # Установить игрока 1 текущим
+        t.current_player = 1
+        # Выполнить победный ход в ячейку (0, 2)
+        t.move((0, 2))
+
+        # Проверить, что игра заканчивается после данного хода
+        self.assertEqual(t.state, Tictac.ST_END)
+        # Проверить, что игрок 1 является победителем
+        self.assertEqual(t.winner, 1)
+        # Проверить, что нельзя сделать ход после завершения игры
+        self.assertEqual(t.move((1, 2)), Tictac.MV_GAMEOVER)
