@@ -47,6 +47,10 @@ class Tictac:
         self.current_player = self.next_player(self.current_player)
 
         return Tictac.MV_OK
+    
+    def next_player(self, player):
+        # Переход к следующему игроку
+        return (player + 1) % self.players
 
     
 class TictacTests(unittest.TestCase):
@@ -89,3 +93,12 @@ class TictacTests(unittest.TestCase):
         self.assertEqual(t.current_player, 1)
         # Проверить, что результат хода в ту же ячейку вернёт ошибку
         self.assertEqual(t.move(cell), Tictac.MV_BAD)
+        
+    def test_next_player_helping_function(self):
+        # Начать новую игру с тремя игроками
+        t = Tictac(players=3)
+
+        # Проверить, что следующий после игрока 0 - игрок 1
+        self.assertEqual(t.next_player(0), 1)
+        # Проверить, что следующий после игрока 2 - игрок 0
+        self.assertEqual(t.next_player(2), 0)
