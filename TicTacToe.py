@@ -80,6 +80,7 @@ class Tictac:
             return True
 
         return False
+
     
 class TictacTests(unittest.TestCase):
 
@@ -147,3 +148,26 @@ class TictacTests(unittest.TestCase):
         self.assertEqual(t.winner, 1)
         # Проверить, что нельзя сделать ход после завершения игры
         self.assertEqual(t.move((1, 2)), Tictac.MV_GAMEOVER)
+        
+    def test_winner_helping_function(self):
+        # Начать новую игру
+        t = Tictac()
+
+        # Проверить, что игрок 1 не является победителем в начале игры
+        self.assertFalse(t.check_winner(1))
+
+        # Проверить, что 3 ячейки в ряд приведут к победе
+        t.moves[1] = {(0, 0), (1, 0), (2, 0)}
+        self.assertTrue(t.check_winner(1))
+
+        # Проверить, что 3 ячейки в столбик приведут к победе
+        t.moves[1] = {(1, 0), (1, 1), (1, 2)}
+        self.assertTrue(t.check_winner(1))
+
+        # Проверить, что 3 ячейки на главной диагонали приведут к побде
+        t.moves[1] = {(0, 0), (1, 1), (2, 2)}
+        self.assertTrue(t.check_winner(1))
+
+        # Проверить, что 3 ячейки на побочной диагонали приведут к победе
+        t.moves[1] = {(2, 0), (1, 1), (0, 2)}
+        self.assertTrue(t.check_winner(1))
